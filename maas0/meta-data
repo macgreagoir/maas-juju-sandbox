@@ -1,0 +1,18 @@
+#cloud-config
+network-interfaces: |
+  auto lo
+  iface lo inet loopback
+
+  auto eth0
+  iface eth0 inet static
+    address 192.168.123.2
+    netmask 255.255.255.0
+
+  auto eth1
+  iface eth1 inet static
+    address 192.168.124.2
+    netmask 255.255.255.0
+    gateway 192.168.124.1
+    dns-nameservers 192.168.123.2 192.168.1.254
+    dns-search maas
+

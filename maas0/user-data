@@ -1,0 +1,11 @@
+#cloud-config
+password: foobar
+chpasswd: { expire: False }
+ssh_pwauth: True
+hostname: maas0
+runcmd:
+ - [ apt-get, update ]
+ - [ apt-get, install, '-y', libvirt-bin ]
+ - [ virsh, net-destroy, default ]
+ - [ virsh, net-undefine, default ]
+# apt_upgrade: true

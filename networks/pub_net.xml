@@ -1,0 +1,7 @@
+<network>
+  <name>pub_net</name>
+  <forward mode='nat'/>
+  <bridge name='virbr2'/>
+  <ip address='192.168.124.1' netmask='255.255.255.0'>
+  </ip>
+</network>
