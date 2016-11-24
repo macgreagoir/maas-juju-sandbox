@@ -46,4 +46,5 @@ Using the mass-installation project code on `maas0`, install and configure MAAS
  * Add the nodes listed in `maas-installation/secrets/host-inventory.txt` to MAAS
      * `maas-installation/scripts/maas-add-hosts.sh -d`
  * Add this maas cloud to Juju
-     * `juju add-cloud dot2 $generated_secrets/maas-clouds.yaml` 
+     * `juju add-cloud maas-cloud ${generated_secrets}/maas-clouds.yaml`
+     * `juju add-credential maas-cloud` ('maas-oath', when prompted, is the API key from `maas-region apikey --username=maas-root`)

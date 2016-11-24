@@ -17,12 +17,12 @@ lts_url="http://cloud-images.ubuntu.com/releases/14.04/release/ubuntu-14.04-serv
 }
 
 # Uncompress it and increase it to 20 GB
-qemu-img convert -O qcow2 ${SANDBOX_DIR}/img/lts.img.dist img/maas0.qcow2
-qemu-img resize img/maas0.qcow2 +18G
+qemu-img convert -O qcow2 ${SANDBOX_DIR}/img/lts.img.dist ${SANDBOX_DIR}/img/maas0.qcow2
+qemu-img resize ${SANDBOX_DIR}/img/maas0.qcow2 +18G
 
 # Create a disk storing seed data
 [[ -f "${SANDBOX_DIR}/maas0/user-data"  && -f "${SANDBOX_DIR}/maas0/meta-data" ]] && {
-    cloud-localds img/maas0-seed.img maas0/user-data maas0/meta-data
+    cloud-localds ${SANDBOX_DIR}/img/maas0-seed.img ${SANDBOX_DIR}/maas0/user-data ${SANDBOX_DIR}/maas0/meta-data
 }
 # kvm -net nic -net user,name=priv_net -net user,name=pub_net -hda img/maas0.qcow2 -hdb img/maas0-seed.img -m 512
 
