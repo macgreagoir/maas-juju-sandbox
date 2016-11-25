@@ -1,0 +1,6 @@
+# Example configuration
+# Copy this file as `config.sh` and update it for your IPv6 addressing
+export IPV6_PREFIX="2001:0db8::/32"
+export HENET_IPV6_CLIENT=2001:0db8::2
+export HENET_IPV6_SERVER=2001:0db8::1
+export HENET_IPV4_CLIENT=192.168.2.1

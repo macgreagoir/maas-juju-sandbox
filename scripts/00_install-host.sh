@@ -12,6 +12,14 @@ SANDBOX_DIR=$(cd $(dirname ${BASH_SOURCE[0]})/..; pwd)
 
 apt-get install -y libvirt-bin kvm cloud-utils genisoimage
 
+# Write priv_net.xml from template
+[[ -f "${SANDBOX_DIR}/config.sh" ]] && {
+    source ${SANDBOX_DIR}/config.sh
+    sed -e "s|@HENET_IPV6_PREFIX@|${IPV6_PREFIX%/*}|}" \
+        -e "s|@HENET_IPV6_NETMASK@|${IPV6_PREFIX#*/}|" \
+        ${SANDBOX_DIR}/networks/priv_net.tmpl > ${SANDBOX_DIR}/networks/priv_net.xml
+} || exit 1
+
 # Define and start the required networks
 # We assume 'default' is defined, but we don't use it
 virsh net-define ${SANDBOX_DIR}/networks/priv_net.xml

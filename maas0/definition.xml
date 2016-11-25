@@ -60,13 +60,11 @@
     </controller>
     <interface type='network'>
       <source network='priv_net'/>
-      <ip address='192.168.123.2' family='ipv4'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </interface>
     <interface type='network'>
       <source network='pub_net'/>
-      <ip address='192.168.124.2' family='ipv4'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
     </interface>

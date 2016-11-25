@@ -1,6 +1,14 @@
 #!/bin/bash
 # Generate secrets used in maas-installation
 
+[[ -f "${SANDBOX_DIR}/config.sh" ]] && {
+    source ${SANDBOX_DIR}/config.sh
+} || exit 1
+
+: ${IPV6_PREFIX?}
+PREFIX=${IPV6_PREFIX%/*}
+NETMASK=${IPV6_PREFIX#*/}
+
 SANDBOX_DIR=$(cd $(dirname ${BASH_SOURCE[0]})/..; pwd)
 
 mkdir -p ${SANDBOX_DIR}/maas-installation/secrets
@@ -11,21 +19,17 @@ cat > ${SANDBOX_DIR}/maas-installation/secrets/network.sh <<EOF
 
 # Align with maas_server_interfaces.tmpl
 export MAAS_PRIV_IFACE=eth0
-export MAAS_PRIV_IP=192.168.123.2
-export PRIV_NETMASK=255.255.255.0
-export MAAS_PUB_IP=192.168.124.2
-export PUB_NETMASK=255.255.255.0
-export PUB_GW=192.168.124.1
-export DNS_NS="192.168.123.2 8.8.8.8"
-# MAAS DHCP scope on private network
-export STATIC_IP_RANGE_LOW=192.168.123.40
-export STATIC_IP_RANGE_HIGH=192.168.123.99
-export IP_RANGE_LOW=192.168.123.100
-export IP_RANGE_HIGH=192.168.123.239
-export BROADCAST_IP=192.168.123.255
-export ROUTER_IP=192.168.123.1
-# no management (0), manage DHCP (1), manage DHCP and DNS (2)
-export MANAGEMENT=2
+export MAAS_PRIV_IP=${PREFIX}10
+export PRIV_GW=${PREFIX}1
+export PRIV_SUBNET=${PREFIX}
+export PRIV_NETMASK=${NETMASK}
+export DNS_NS="${PREFIX}10 2001:4860:4860::8888"
+# Dynamic are addresses used for PXE; commissioning and, if DHCP, deployment
+export DYNAMIC_RANGE_LOW=${PREFIX}40
+export DYNAMIC_RANGE_HIGH=${PREFIX}99
+# Reserved are addresses MAAS will not assign to machines
+export RESERVED_RANGE_LOW=${PREFIX}1
+export RESERVED_RANGE_HIGH=${PREFIX}39
 # Space-separated list of dns forwarders. Leave empty for system
 # defaults
 export UPSTREAM_DNS=''
@@ -45,7 +49,7 @@ EOF
 chmod 0770 ${SANDBOX_DIR}/maas-installation/secrets/maas-config.sh
 
 cat > ${SANDBOX_DIR}/maas-installation/secrets/host-inventory.txt <<EOF
-#name     tags  ipmi_user  ipmi_passwd  ipmi_ip  priv_ip  pub_ip  priv_mac  pub_mac
+#name tags ipmi_user ipmi_passwd ipmi_ip priv_mac pub_mac
 EOF
 
 # You might want a new user for machine power control (ipmi_user)
@@ -67,14 +71,12 @@ for def in $(ls ${SANDBOX_DIR}/nodeN/*_definition.xml); do
     IPMI_USER=virt          # a user in libvirtd group
     IPMI_PASSWD=XXXXXXXX    # edit here or in generated file
     IPMI_IP=192.168.123.1
-    PRIV_IP=192.168.123.$(( vm_node+40 ))  # based on dhcp scope
-    PUB_IP=192.168.124.$(( vm_node+40 ))
     # TODO nasty and presumptuous
     PRIV_MAC=$(virsh dumpxml ${name} | grep -B1 priv_net | awk -F\' '/mac address/ {print $2}')
     PUB_MAC=$(virsh dumpxml ${name} | grep -B1 pub_net | awk -F\' '/mac address/ {print $2}')
     
     cat >> ${SANDBOX_DIR}/maas-installation/secrets/host-inventory.txt <<EOF
-$HOST_NAME $TAGS $IPMI_USER $IPMI_PASSWD $IPMI_IP $PRIV_IP $PUB_IP $PRIV_MAC $PUB_MAC
+$HOST_NAME $TAGS $IPMI_USER $IPMI_PASSWD $IPMI_IP $PRIV_MAC $PUB_MAC
 EOF
 
     vm_node=$(( vm_node+1 ))
@@ -82,8 +84,8 @@ done
 
 cat > ${SANDBOX_DIR}/maas-installation/maas-clouds.yaml <<EOF
 clouds:
-  dot2:
+  maas-cloud:
     type: maas
     auth-types: [oauth1]
-    endpoint: http://192.168.124.2/MAAS
+    endpoint: http://${PREFIX}10/MAAS
 EOF

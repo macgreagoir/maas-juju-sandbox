@@ -20,6 +20,17 @@ lts_url="http://cloud-images.ubuntu.com/releases/14.04/release/ubuntu-14.04-serv
 qemu-img convert -O qcow2 ${SANDBOX_DIR}/img/lts.img.dist ${SANDBOX_DIR}/img/maas0.qcow2
 qemu-img resize ${SANDBOX_DIR}/img/maas0.qcow2 +18G
 
+# Write the meta-data file from template
+[[ -f "${SANDBOX_DIR}/config.sh" ]] && {
+    source ${SANDBOX_DIR}/config.sh
+    sed -e "s|@HENET_IPV6_PREFIX@|${IPV6_PREFIX%/*}|}" \
+        -e "s|@HENET_IPV6_NETMASK@|${IPV6_PREFIX#*/}|" \
+        -e "s|@HENET_IPV6_CLIENT@|${HENET_IPV6_CLIENT}|" \
+        -e "s|@HENET_IPV4_CLIENT@|${HENET_IPV4_CLIENT}|" \
+        -e "s|@HENET_IPV6_SERVER@|${HENET_IPV6_SERVER}|" \
+        ${SANDBOX_DIR}/maas0/meta-data.tmpl > ${SANDBOX_DIR}/maas0/meta-data
+} || exit 1
+
 # Create a disk storing seed data
 [[ -f "${SANDBOX_DIR}/maas0/user-data"  && -f "${SANDBOX_DIR}/maas0/meta-data" ]] && {
     cloud-localds ${SANDBOX_DIR}/img/maas0-seed.img ${SANDBOX_DIR}/maas0/user-data ${SANDBOX_DIR}/maas0/meta-data

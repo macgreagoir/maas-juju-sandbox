@@ -1,3 +1,6 @@
+config.sh
 img/*
 !img/README
 maas-installation/*
+maas0/meta-data
+networks/priv_net.xml

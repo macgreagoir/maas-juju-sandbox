@@ -15,6 +15,7 @@ Install and Configure Virtual Networks and Machines
 ---------------------------------------------------
 On the host machine
 
+ * `cp config.example config.sh` and edit `config.sh`
  * `scripts/00_install-host.sh` to prepare the host machine, including creation of virsh networks
  * `scripts/01_create-images.sh` to download the latest cloud image, create VM disks and seed disk
  * `scripts/02_define-machines.sh` to define the VMs in virsh
@@ -27,7 +28,7 @@ MAAS Server Configuration
  * The `maas0` VM is defined in `scripts/02_define-machines.sh`
  * `maas0` gets its configuration from `maas0-seed.img`, created by `scripts/01_create-images.sh`
      * `maas0/user-data` stores the password to be set for the `ubuntu` user
-     * `maas0/meta-data` configures networking
+     * `maas0/meta-data` configures networking, and should be written by `scripts/01_create_images.sh`
 
 
 Initial Environment
