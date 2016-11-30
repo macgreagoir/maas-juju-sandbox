@@ -1,5 +1,5 @@
 <domain type='kvm'>
-  <name>node0</name>
+  <name>node1</name>
   <memory unit='KiB'>1048576</memory>
   <vcpu placement='static'>2</vcpu>
   <os>
@@ -11,8 +11,8 @@
     <apic/>
     <pae/>
   </features>
-  <cpu mode='custom' match='exact'>
-    <model fallback='allow'>SandyBridge</model>
+  <cpu mode='host-model'>
+    <model fallback='allow'/>
   </cpu>
   <clock offset='utc'>
     <timer name='rtc' tickpolicy='catchup'/>
@@ -26,7 +26,7 @@
     <emulator>/usr/bin/kvm-spice</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source file='../img/node0.qcow2'/>
+      <source file='../img/node1.qcow2'/>
       <target dev='hda' bus='ide'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
